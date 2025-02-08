@@ -9,11 +9,45 @@ const Stack = createNativeStackNavigator();
 
 export default function BudgetStack() {
   return (
-    <Stack.Navigator>
-        <Stack.Screen name="Budgets" component={BudgetList} options={{ headerShown: false, title: 'Budget Detail' }}/>
-        <Stack.Screen name="BudgetDetail" component={BudgetDetail} options={{ headerShown: false, title: 'Budget Detail' }} />
-        <Stack.Screen name="AddBudget" component={AddBudget} options={{ headerShown: false, title: 'Add Budget' }} />
-        <Stack.Screen name="AddTransaction" component={AddTransaction} options={{ headerShown: false, title: 'Add Transaction' }} />
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#fff',
+        },
+        headerTintColor: '#000',
+        headerTitleStyle: {
+          fontWeight: '600',
+        },
+      }}
+    >
+      <Stack.Screen 
+        name="Budgets" 
+        component={BudgetList} 
+        options={{ 
+          title: 'My Budgets'
+        }}
+      />
+      <Stack.Screen 
+        name="BudgetDetail" 
+        component={BudgetDetail} 
+        options={{ 
+          title: 'Budget Detail'
+        }} 
+      />
+      <Stack.Screen 
+        name="AddBudget" 
+        component={AddBudget} 
+        options={{ 
+          title: 'Add Budget'
+        }} 
+      />
+      <Stack.Screen 
+        name="AddTransaction" 
+        component={AddTransaction} 
+        options={{ 
+          title: 'Add Transaction'
+        }} 
+      />
     </Stack.Navigator>
   );
 }

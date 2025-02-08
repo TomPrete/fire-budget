@@ -16,30 +16,33 @@ import MainAppNavigator from './components/MainAppNavigator';
 import BudgetStack from './components/BudgetStack';
 import getHeaderTitle from './helpers/header_title';
 import TransactionList from './components/TransactionList';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 const RootStack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <AuthProvider>
-      <IncomeProvider>
-        <BudgetProvider>
-          <NavigationContainer>
-            <RootStack.Navigator screenOptions={{ headerShown: false }}>
-              <RootStack.Screen name="Home" component={Home} />
-              <RootStack.Screen name="Login" component={Login} />
-              <RootStack.Screen name="Signup" component={Signup} />
-              <RootStack.Screen name="BudgetList" component={BudgetList} />
-              <RootStack.Screen name="AddBudget" component={AddBudget} />
-              <RootStack.Screen name="BudgetDetail" component={BudgetDetail} />
-              <RootStack.Screen name="AddTransaction" component={AddTransaction} />
-              <RootStack.Screen name="Report" component={Report} />
-              <RootStack.Screen name="MainApp" component={MainAppNavigator} />
-              <RootStack.Screen name="TransactionList" component={TransactionList} />
-              <RootStack.Screen name="BudgetRootStack" component={BudgetStack} />
-            </RootStack.Navigator>
-          </NavigationContainer>
-        </BudgetProvider>
-      </IncomeProvider>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <IncomeProvider>
+          <BudgetProvider>
+            <NavigationContainer>
+              <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                <RootStack.Screen name="Home" component={Home} />
+                <RootStack.Screen name="Login" component={Login} />
+                <RootStack.Screen name="Signup" component={Signup} />
+                <RootStack.Screen name="BudgetList" component={BudgetList} />
+                <RootStack.Screen name="AddBudget" component={AddBudget} />
+                <RootStack.Screen name="BudgetDetail" component={BudgetDetail} />
+                <RootStack.Screen name="AddTransaction" component={AddTransaction} />
+                <RootStack.Screen name="Report" component={Report} />
+                <RootStack.Screen name="MainApp" component={MainAppNavigator} />
+                <RootStack.Screen name="TransactionList" component={TransactionList} />
+                <RootStack.Screen name="BudgetRootStack" component={BudgetStack} />
+              </RootStack.Navigator>
+            </NavigationContainer>
+          </BudgetProvider>
+        </IncomeProvider>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }

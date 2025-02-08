@@ -38,13 +38,15 @@ export default function AddTransaction({ route, navigation }) {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Description"
+        placeholder="Ex: In-and-Out, Amazon, etc."
+        placeholderTextColor="#666"
         value={description}
         onChangeText={setDescription}
       />
       <TextInput
         style={styles.input}
-        placeholder="Amount"
+        placeholder="Ex: $10, $50, etc."
+        placeholderTextColor="#666"
         value={amount}
         onChangeText={setAmount}
         keyboardType="numeric"
@@ -53,7 +55,7 @@ export default function AddTransaction({ route, navigation }) {
         style={styles.input}
         onPress={() => setShowDatePicker(true)}
       >
-        <Text>{date.toLocaleDateString()}</Text>
+        <Text style={styles.dateText}>{date.toLocaleDateString()}</Text>
       </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
@@ -91,12 +93,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   input: {
     backgroundColor: '#fff',
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
+    fontSize: 16,
+    color: '#000',
+  },
+  dateText: {
+    color: '#000',
     fontSize: 16,
   },
   button: {

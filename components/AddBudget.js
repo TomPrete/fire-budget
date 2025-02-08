@@ -18,13 +18,15 @@ export default function AddBudget({ navigation }) {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Budget Category Name"
+        placeholder="Ex: Groceries, Rent, etc."
+        placeholderTextColor="#666"
         value={name}
         onChangeText={setName}
       />
       <TextInput
         style={styles.input}
-        placeholder="Budget Amount"
+        placeholder="Ex: $100, $500, etc."
+        placeholderTextColor="#666"
         value={amount}
         onChangeText={setAmount}
         keyboardType="numeric"
@@ -43,6 +45,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   input: {
     backgroundColor: '#fff',
@@ -50,6 +53,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     fontSize: 16,
+    color: '#000',
   },
   button: {
     backgroundColor: '#2ecc71',

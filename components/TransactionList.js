@@ -1,40 +1,81 @@
-import React from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, SectionList, Text, StyleSheet } from 'react-native';
 import { useBudget } from '../contexts/BudgetContext';
+import Transaction from './Transaction';
+import FloatingActionButton from './FloatingActionButton';
+import { useNavigation } from '@react-navigation/native';
 
 export default function TransactionList() {
-  const { getAllTransactions } = useBudget();
-  const { budgets } = useBudget();
-  const transactions = getAllTransactions().sort((a, b) => new Date(b.date) - new Date(a.date));
-  console.log(budgets);
+  const { getAllTransactions, budgets } = useBudget();
+  const navigation = useNavigation();
+  
+  // Group transactions by month
+  const sections = useMemo(() => {
+    const transactions = getAllTransactions();
+    const grouped = transactions.reduce((acc, transaction) => {
+      const date = new Date(transaction.date);
+      const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+      
+      if (!acc[monthYear]) {
+        acc[monthYear] = [];
+      }
+      acc[monthYear].push(transaction);
+      return acc;
+    }, {});
+
+    // Convert to array and sort sections by date
+    return Object.entries(grouped)
+      .map(([title, data]) => ({
+        title,
+        data: data.sort((a, b) => new Date(b.date) - new Date(a.date))
+      }))
+      .sort((a, b) => {
+        const dateA = new Date(a.data[0].date);
+        const dateB = new Date(b.data[0].date);
+        return dateB - dateA;
+      });
+  }, [getAllTransactions]);
 
   const getBudgetName = (budgetId) => {
     const budget = budgets.find(b => b.id === budgetId);
     return budget ? budget.name : 'Unknown Budget';
   };
 
+  const handleAddTransaction = () => {
+    navigation.navigate('AddTransaction');
+  };
+
   const renderTransaction = ({ item }) => (
-    <View style={styles.transactionItem}>
-      <View style={styles.transactionHeader}>
-        <Text style={styles.transactionName}>{item.description}</Text>
-        <Text style={[styles.amount, { color: '#e74c3c' }]}>
-          ${Math.abs(item.amount).toFixed(2)}
-        </Text>
-      </View>
-      <Text style={styles.date}>{new Date(item.date).toLocaleDateString()}</Text>
-      <Text style={styles.budgetName}>Budget: {getBudgetName(item.budgetId)}</Text>
+    <Transaction 
+      transaction={item}
+      showBudgetName={true}
+      budgetName={getBudgetName(item.budgetId)}
+      onDelete={() => {}} // Add delete handler if needed
+    />
+  );
+
+  const renderSectionHeader = ({ section: { title } }) => (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionHeaderText}>{title}</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={transactions}
+      <SectionList
+        sections={sections}
         renderItem={renderTransaction}
+        renderSectionHeader={renderSectionHeader}
         keyExtractor={item => item.id}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No transactions yet</Text>
         }
+        contentContainerStyle={styles.listContent}
+        stickySectionHeadersEnabled={true}
+      />
+      <FloatingActionButton 
+        onPress={handleAddTransaction}
+        color="#2ecc71"
       />
     </View>
   );
@@ -43,50 +84,35 @@ export default function TransactionList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#f5f5f5',
   },
-  transactionItem: {
-    backgroundColor: 'white',
+  listContent: {
     padding: 16,
-    borderRadius: 8,
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 2,
-  },
-  transactionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  transactionName: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  amount: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  date: {
-    color: '#666',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  budgetName: {
-    color: '#666',
-    fontSize: 14,
+    paddingBottom: 80, // Add extra padding at bottom for FAB
   },
   emptyText: {
     textAlign: 'center',
     marginTop: 24,
     color: '#666',
     fontSize: 16,
+  },
+  sectionHeader: {
+    backgroundColor: '#f0f4f8', // Light blue-gray background
+    padding: 12,
+    marginBottom: 8,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+  sectionHeaderText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#34495e', // Darker text for better contrast
   },
 }); 
