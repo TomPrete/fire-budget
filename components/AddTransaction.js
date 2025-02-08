@@ -1,23 +1,36 @@
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useBudget } from '../contexts/BudgetContext';
 
 export default function AddTransaction({ route, navigation }) {
-  const { budgetId } = route.params;
+  const { budgets } = useBudget();
+  const defaultBudgetId = budgets[0]?.id;
+  const { budgetId = defaultBudgetId } = route?.params || {};
+  
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [selectedBudgetId, setSelectedBudgetId] = useState(budgetId);
-  const { addTransaction, budgets } = useBudget();
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const { addTransaction } = useBudget();
 
   const handleSubmit = () => {
     if (description.trim() && amount) {
       addTransaction(selectedBudgetId, {
         description: description.trim(),
-        amount: parseFloat(amount) * -1, // Negative amount for spending
-        date: new Date().toISOString(),
+        amount: parseFloat(amount), // Negative amount for spending
+        date: date.toISOString(),
       });
       navigation.goBack();
+    }
+  };
+
+  const onDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
     }
   };
 
@@ -36,6 +49,19 @@ export default function AddTransaction({ route, navigation }) {
         onChangeText={setAmount}
         keyboardType="numeric"
       />
+      <TouchableOpacity 
+        style={styles.input}
+        onPress={() => setShowDatePicker(true)}
+      >
+        <Text>{date.toLocaleDateString()}</Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          onChange={onDateChange}
+        />
+      )}
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={selectedBudgetId}

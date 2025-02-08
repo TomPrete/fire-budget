@@ -12,7 +12,10 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       // Add your API call here
       // const response = await api.post('/login', { email, password });
-      // setUser(response.data.user);
+      //   setUser(response.data.user);
+      const mockUser = { email, id: '1' };
+      setUser(mockUser);
+      return mockUser;
     } catch (error) {
       throw error;
     } finally {

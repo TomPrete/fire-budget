@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useBudget } from '../contexts/BudgetContext';
+import Transaction from './Transaction';
 
 export default function BudgetDetail({ route, navigation }) {
   const { budgetId } = route.params;
@@ -36,27 +37,10 @@ export default function BudgetDetail({ route, navigation }) {
   };
 
   const renderTransaction = ({ item }) => (
-    <View style={styles.transactionItem}>
-      <View>
-        <Text style={styles.transactionDescription}>{item.description}</Text>
-        <Text style={styles.transactionDate}>
-          {new Date(item.date).toLocaleDateString()}
-        </Text>
-      </View>
-      <View style={styles.transactionRight}>
-        <Text style={[
-          styles.transactionAmount,
-          { color: item.amount < 0 ? '#e74c3c' : '#2ecc71' }
-        ]}>
-          ${Math.abs(item.amount).toFixed(2)}
-        </Text>
-        <TouchableOpacity
-          onPress={() => deleteTransaction(item.id)}
-        >
-          <Text style={styles.deleteText}>Delete</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <Transaction 
+      transaction={item}
+      onDelete={deleteTransaction}
+    />
   );
 
   return (

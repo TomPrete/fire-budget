@@ -4,14 +4,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { useBudget } from '../contexts/BudgetContext';
 import BudgetCard from './BudgetCard';
+import Graph from './Graph';
 
 export default function BudgetList({ navigation }) {
-  const { budgets, deleteBudget } = useBudget();
-
+  const { budgets, deleteBudget, getAllTransactions } = useBudget();
+  console.log(getAllTransactions());
   const handleDelete = (budget) => {
     Alert.alert(
       "Delete Budget",
-      `Are you sure you want to delete "${budget.name}"?`,
+      `Are you sure you want to delete the "${budget.name}" budget and all its transactions?`,
       [
         {
           text: "Cancel"
@@ -55,6 +56,10 @@ export default function BudgetList({ navigation }) {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
+        <View style={styles.graphContainer}>
+          <Graph expenses={getAllTransactions()} />
+        </View>
+
         <TouchableOpacity 
           style={styles.addButton}
           onPress={() => navigation.navigate('AddBudget')}
@@ -76,6 +81,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  graphContainer: {
+    // height: 250,
+    // marginBottom: 30,
   },
   budgetItem: {
     padding: 16,

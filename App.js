@@ -1,34 +1,45 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Home from './components/Home';
 import { AuthProvider } from './contexts/AuthContext';
 import { BudgetProvider } from './contexts/BudgetContext';
+import { IncomeProvider } from './contexts/IncomeContext'; 
 import BudgetList from './components/BudgetList';
 import AddBudget from './components/AddBudget';
 import BudgetDetail from './components/BudgetDetail';
 import AddTransaction from './components/AddTransaction';
-
-const Stack = createStackNavigator();
+import Report from './components/Report';
+import MainAppNavigator from './components/MainAppNavigator';
+import BudgetStack from './components/BudgetStack';
+import getHeaderTitle from './helpers/header_title';
+import TransactionList from './components/TransactionList';
+const RootStack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <AuthProvider>
-      <BudgetProvider>
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Signup" component={Signup} />
-            <Stack.Screen name="BudgetList" component={BudgetList} />
-            <Stack.Screen name="AddBudget" component={AddBudget} />
-            <Stack.Screen name="BudgetDetail" component={BudgetDetail} />
-            <Stack.Screen name="AddTransaction" component={AddTransaction} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </BudgetProvider>
+      <IncomeProvider>
+        <BudgetProvider>
+          <NavigationContainer>
+            <RootStack.Navigator screenOptions={{ headerShown: false }}>
+              <RootStack.Screen name="Home" component={Home} />
+              <RootStack.Screen name="Login" component={Login} />
+              <RootStack.Screen name="Signup" component={Signup} />
+              <RootStack.Screen name="BudgetList" component={BudgetList} />
+              <RootStack.Screen name="AddBudget" component={AddBudget} />
+              <RootStack.Screen name="BudgetDetail" component={BudgetDetail} />
+              <RootStack.Screen name="AddTransaction" component={AddTransaction} />
+              <RootStack.Screen name="Report" component={Report} />
+              <RootStack.Screen name="MainApp" component={MainAppNavigator} />
+              <RootStack.Screen name="TransactionList" component={TransactionList} />
+              <RootStack.Screen name="BudgetRootStack" component={BudgetStack} />
+            </RootStack.Navigator>
+          </NavigationContainer>
+        </BudgetProvider>
+      </IncomeProvider>
     </AuthProvider>
   );
 }

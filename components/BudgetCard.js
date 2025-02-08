@@ -8,7 +8,7 @@ export default function BudgetCard({ budget, onPress, onAddTransaction }) {
   const { getBudgetTransactions } = useBudget();
   const transactions = getBudgetTransactions(budget.id) || 0;
   const totalTransactions = transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
-  const progressPercentage = Math.min(100, (totalTransactions / budget.amount) * 100 * -1);
+  const progressPercentage = Math.min(100, (totalTransactions / budget.amount) * 100);
 
   return (
     <TouchableOpacity style={styles.budgetItem} onPress={onPress}>
@@ -16,7 +16,7 @@ export default function BudgetCard({ budget, onPress, onAddTransaction }) {
         <Text style={styles.budgetName}>{budget.name}</Text>
         <View style={styles.rightContainer}>
           <Text style={styles.budgetAmount}>
-            ${(totalTransactions * -1).toFixed(0)} / ${budget.amount}
+            ${(budget.amount - totalTransactions).toFixed(0)} / ${budget.amount}
           </Text>
           <TouchableOpacity 
             style={styles.addButton}

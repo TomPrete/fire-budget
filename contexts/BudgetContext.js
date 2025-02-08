@@ -17,7 +17,6 @@ export const BudgetProvider = ({ children }) => {
     try {
       const storedBudgets = await AsyncStorage.getItem('budgets');
       const storedTransactions = await AsyncStorage.getItem('transactions');
-      console.log(storedTransactions)
       if (storedBudgets) setBudgets(JSON.parse(storedBudgets));
       if (storedTransactions) setTransactions(JSON.parse(storedTransactions));
     } catch (error) {
@@ -54,12 +53,14 @@ export const BudgetProvider = ({ children }) => {
   };
 
   const getBudgetTransactions = (budgetId) => {
-    return transactions.filter(transaction => transaction.budgetId === budgetId);
+    return transactions
+      .filter(transaction => transaction.budgetId === budgetId)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
   };
 
   const getBudgetTotal = (budgetId) => {
     return getBudgetTransactions(budgetId)
-      .reduce((sum, transaction) => sum + transaction.amount, 0);
+      .reduce((sum, transaction) => sum - transaction.amount, 0);
   };
 
   const deleteBudget = (budgetId) => {
@@ -69,6 +70,15 @@ export const BudgetProvider = ({ children }) => {
 
   const deleteTransaction = (transactionId) => {
     setTransactions(prev => prev.filter(transaction => transaction.id !== transactionId));
+  };
+
+  const getTotalTransactions = () => {
+    return transactions.reduce((sum, transaction) => sum - transaction.amount, 0);
+  };
+
+  const getAllTransactions = () => {
+    return transactions
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
   };
 
   return (
@@ -82,6 +92,8 @@ export const BudgetProvider = ({ children }) => {
       getBudgetTotal,
       deleteBudget,
       deleteTransaction,
+      getTotalTransactions,
+      getAllTransactions,
     }}>
       {children}
     </BudgetContext.Provider>
