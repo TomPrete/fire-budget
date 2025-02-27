@@ -6,9 +6,37 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function BudgetCard({ budget, onPress, onAddTransaction }) {
   const { getBudgetTransactions } = useBudget();
-  const transactions = getBudgetTransactions(budget.id) || 0;
-  const totalTransactions = transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
-  const progressPercentage = Math.min(100, (totalTransactions / budget.amount) * 100);
+  
+  const [transactions, setTransactions] = React.useState([]);
+  const [totalTransactions, setTotalTransactions] = React.useState(0);
+  const [progressPercentage, setProgressPercentage] = React.useState(0);
+
+  React.useEffect(() => {
+    console.log('budget', budget)
+    // Get all transactions for this budget
+    const allTransactions = getBudgetTransactions(budget.id) || [];
+    
+    // Filter transactions for current month
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    console.log('allTransactions', allTransactions)
+    const currentMonthTransactions = allTransactions.filter(transaction => {
+      const transactionDate = new Date(transaction.date);
+      return transactionDate.getMonth() === currentMonth && 
+             transactionDate.getFullYear() === currentYear;
+    });
+    console.log('currentMonthTransactions', currentMonthTransactions)
+    // Calculate total for current month transactions
+    const total = currentMonthTransactions?.reduce(
+      (acc, transaction) => acc + transaction.amount,
+      0
+    );
+
+    setTransactions(allTransactions);
+    setTotalTransactions(total);
+    setProgressPercentage(Math.min(100, (total / budget.amount) * 100));
+  }, [budget.id, budget.amount, getBudgetTransactions]);
 
   return (
     <TouchableOpacity style={styles.budgetItem} onPress={onPress}>

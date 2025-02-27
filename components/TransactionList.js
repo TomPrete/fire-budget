@@ -4,6 +4,7 @@ import { useBudget } from '../contexts/BudgetContext';
 import Transaction from './Transaction';
 import FloatingActionButton from './FloatingActionButton';
 import { useNavigation } from '@react-navigation/native';
+import COLORS from '../constants/colors';
 
 export default function TransactionList() {
   const { getAllTransactions, budgets } = useBudget();
@@ -75,7 +76,7 @@ export default function TransactionList() {
       />
       <FloatingActionButton 
         onPress={handleAddTransaction}
-        color="#2ecc71"
+        color={COLORS.primary}
       />
     </View>
   );
@@ -84,7 +85,7 @@ export default function TransactionList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.lightBackground,
   },
   listContent: {
     padding: 16,
@@ -93,15 +94,15 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     marginTop: 24,
-    color: '#666',
+    color: COLORS.secondaryText,
     fontSize: 16,
   },
   sectionHeader: {
-    backgroundColor: '#f0f4f8', // Light blue-gray background
+    backgroundColor: COLORS.whiteTransparent,
     padding: 12,
     marginBottom: 8,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -113,6 +114,6 @@ const styles = StyleSheet.create({
   sectionHeaderText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#34495e', // Darker text for better contrast
+    color: COLORS.primaryText,
   },
 }); 

@@ -1,14 +1,50 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, TextInput, Text, StyleSheet, TouchableOpacity, ImageBackground, Alert, ActivityIndicator } from 'react-native';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SignupScreen() {
+  const { signup } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigation = useNavigation();
 
-  const handleSignup = () => {
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    const hasMinLength = password.length >= 8;
+    const hasNumber = /\d/.test(password);
+    const hasLetter = /[a-zA-Z]/.test(password);
+    
+    return {
+      isValid: hasMinLength && hasNumber && hasLetter,
+      errors: [
+        !hasMinLength && 'Password must be at least 8 characters long',
+        !hasNumber && 'Password must contain at least one number',
+        !hasLetter && 'Password must contain at least one letter'
+      ].filter(Boolean)
+    };
+  };
+
+  const handleSignup = async () => {
     if (!email || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address');
+      return;
+    }
+
+    const { isValid, errors } = validatePassword(password);
+    if (!isValid) {
+      Alert.alert('Invalid Password', errors.join('\n'));
       return;
     }
 
@@ -17,8 +53,33 @@ export default function SignupScreen() {
       return;
     }
 
-    // Add your signup logic here
-    console.log('Signup attempt with:', { email, password });
+    setIsLoading(true);
+    try {
+      const result = await signup(email, password);
+      Alert.alert(
+        'Success!',
+        result.message,
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.replace('Login')
+          }
+        ],
+        { cancelable: false }
+      );
+    } catch (error) {
+      Alert.alert(
+        'Signup Failed', 
+        error.message || 'Failed to create account. Please try again.'
+      );
+      console.error('Signup error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const navigateToLogin = () => {
+    navigation.navigate('Login');
   };
 
   return (
@@ -39,6 +100,8 @@ export default function SignupScreen() {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
+              autoComplete="email"
+              editable={!isLoading}
             />
             <TextInput
               style={styles.input}
@@ -47,6 +110,7 @@ export default function SignupScreen() {
               value={password}
               onChangeText={setPassword}
               secureTextEntry
+              editable={!isLoading}
             />
             <TextInput
               style={styles.input}
@@ -55,14 +119,27 @@ export default function SignupScreen() {
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry
+              editable={!isLoading}
             />
             
             <TouchableOpacity 
-              style={styles.signupButton}
+              style={[styles.signupButton, isLoading && styles.disabledButton]}
               onPress={handleSignup}
+              disabled={isLoading}
             >
-              <Text style={styles.buttonText}>Sign Up</Text>
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>Sign Up</Text>
+              )}
             </TouchableOpacity>
+
+            <View style={styles.loginContainer}>
+              <Text style={styles.loginText}>Already have an account?</Text>
+              <TouchableOpacity onPress={navigateToLogin}>
+                <Text style={styles.loginLink}>Login</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
@@ -131,5 +208,24 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+  },
+  disabledButton: {
+    opacity: 0.7,
+  },
+  loginContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  loginText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    marginRight: 5,
+  },
+  loginLink: {
+    color: '#007AFF',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

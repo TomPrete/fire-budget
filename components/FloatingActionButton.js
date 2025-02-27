@@ -1,14 +1,15 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import COLORS from '../constants/colors';
 
-export default function FloatingActionButton({ onPress, iconName = 'add', color = '#007AFF' }) {
+export default function FloatingActionButton({ onPress, iconName = 'add', color = COLORS.primary }) {
   return (
     <TouchableOpacity 
       style={[styles.fab, { backgroundColor: color }]} 
       onPress={onPress}
     >
-      <Ionicons name={iconName} size={30} color="#fff" />
+      <Ionicons name={iconName} size={30} color={COLORS.white} />
     </TouchableOpacity>
   );
 }
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
     right: 20,
     bottom: 20,
     elevation: 8,
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: {
       width: 0,
       height: 2,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import COLORS from '../constants/colors';
 
 export default function Transaction({ transaction, onDelete, showBudgetName, budgetName }) {
   const handleDelete = () => {
@@ -47,7 +48,7 @@ export default function Transaction({ transaction, onDelete, showBudgetName, bud
         <View style={styles.transactionRight}>
           <Text style={[
             styles.transactionAmount,
-            { color: '#e74c3c' }
+            { color: COLORS.accent }
           ]}>
             ${Math.abs(transaction.amount).toFixed(2)}
           </Text>
@@ -62,18 +63,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     padding: 16,
     borderRadius: 8,
     marginBottom: 8,
+    shadowColor: COLORS.black,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   transactionDescription: {
     fontSize: 16,
     fontWeight: '500',
+    color: COLORS.primaryText,
   },
   transactionDate: {
     fontSize: 12,
-    color: '#666',
+    color: COLORS.secondaryText,
   },
   transactionRight: {
     alignItems: 'flex-end',
@@ -84,12 +94,12 @@ const styles = StyleSheet.create({
   },
   budgetName: {
     fontSize: 12,
-    color: '#666',
+    color: COLORS.secondaryText,
     marginTop: 2,
   },
   deleteButton: {
     alignItems: 'center',
-    backgroundColor: '#ff3b30',
+    backgroundColor: COLORS.accent,
     borderRadius: 8,
     height: '90%',
     justifyContent: 'center',
@@ -97,7 +107,7 @@ const styles = StyleSheet.create({
     width: 100
   },
   deleteButtonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: 'bold',
   },
 }); 

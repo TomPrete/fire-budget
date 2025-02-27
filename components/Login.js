@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { 
+  View, 
+  TextInput, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  ImageBackground,
+  Alert,
+  ActivityIndicator 
+} from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 
@@ -7,23 +16,46 @@ export default function LoginScreen() {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
       return;
     }
+
+    if (!validateEmail(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address');
+      return;
+    }
+
+    if (password.length < 8) {
+      Alert.alert('Invalid Password', 'Password must be at least 8 characters long');
+      return;
+    }
     
-    console.log('Login attempt with:', { email, password });
-    
+    setIsLoading(true);
     try {
       await login(email, password);
-      console.log('Login successful');
       navigation.replace('MainApp');
     } catch (error) {
-      Alert.alert('Error', error.message || 'Failed to login');
+      Alert.alert(
+        'Login Failed', 
+        error.message || 'Invalid email or password. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const navigateToSignup = () => {
+    navigation.navigate('Signup');
   };
 
   return (
@@ -44,6 +76,8 @@ export default function LoginScreen() {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
+              autoComplete="email"
+              editable={!isLoading}
             />
             <TextInput
               style={styles.input}
@@ -52,14 +86,27 @@ export default function LoginScreen() {
               value={password}
               onChangeText={setPassword}
               secureTextEntry
+              editable={!isLoading}
             />
             
             <TouchableOpacity 
-              style={styles.loginButton}
+              style={[styles.loginButton, isLoading && styles.disabledButton]}
               onPress={handleLogin}
+              disabled={isLoading}
             >
-              <Text style={styles.buttonText}>Login</Text>
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>Login</Text>
+              )}
             </TouchableOpacity>
+
+            <View style={styles.signupContainer}>
+              <Text style={styles.signupText}>Don't have an account?</Text>
+              <TouchableOpacity onPress={navigateToSignup}>
+                <Text style={styles.signupLink}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
@@ -128,5 +175,24 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+  },
+  disabledButton: {
+    opacity: 0.7,
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  signupText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    marginRight: 5,
+  },
+  signupLink: {
+    color: '#007AFF',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

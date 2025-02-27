@@ -10,8 +10,7 @@ const Graph = ({ expenses = [] }) => {
     const currentYear = now.getFullYear();
     console.log('Expenses', expenses)
     // Filter expenses for current month and group by date
-    const monthlyExpenses = expenses
-      .filter(expense => {
+    const monthlyExpenses = expenses.transactions?.filter(expense => {
         const expenseDate = new Date(expense.date);
         return expenseDate.getMonth() === currentMonth && 
                expenseDate.getFullYear() === currentYear;
@@ -29,10 +28,12 @@ const Graph = ({ expenses = [] }) => {
     const data = [];
     let runningTotal = 0;
 
-    for (let i = 1; i <= daysInMonth; i++) {
-      labels.push(i.toString());
-      runningTotal += monthlyExpenses[i] || 0;
-      data.push(runningTotal);
+    if (monthlyExpenses) {
+      for (let i = 1; i <= daysInMonth; i++) {
+        labels.push(i.toString());
+        runningTotal += monthlyExpenses[i] || 0;
+        data.push(runningTotal);
+      }
     }
     console.log("Data", data);
     console.log("Labels", labels);

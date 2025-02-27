@@ -4,11 +4,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { useBudget } from '../contexts/BudgetContext';
 import BudgetCard from './BudgetCard';
-import Graph from './Graph';
+import BudgetProgressBar from './BudgetProgressBar';
+import { ActivityIndicator } from 'react-native';
+import COLORS from '../constants/colors';
 
 export default function BudgetList({ navigation }) {
-  const { budgets, deleteBudget, getAllTransactions } = useBudget();
-  console.log(getAllTransactions());
+  const { budgets, deleteBudget, transactions, loading } = useBudget();
+  // console.log(bugets)
   const handleDelete = (budget) => {
     Alert.alert(
       "Delete Budget",
@@ -26,6 +28,7 @@ export default function BudgetList({ navigation }) {
   };
 
   const renderRightActions = (budget) => {
+    console.log('budget', budget)
     return (
       <TouchableOpacity
         style={styles.deleteButton}
@@ -57,7 +60,7 @@ export default function BudgetList({ navigation }) {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.graphContainer}>
-          <Graph expenses={getAllTransactions()} />
+          <BudgetProgressBar />
         </View>
 
         <TouchableOpacity 
@@ -66,12 +69,15 @@ export default function BudgetList({ navigation }) {
         >
           <Text style={styles.addButtonText}>Add New Budget</Text>
         </TouchableOpacity>
-
-        <FlatList
-          data={budgets}
-          renderItem={renderBudgetItem}
-          keyExtractor={item => item.id}
-        />
+        {loading ? (
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        ) : (
+          <FlatList
+            data={budgets.budgets}
+            renderItem={renderBudgetItem}
+            keyExtractor={item => item.id}
+          />
+        )}
       </View>
     </GestureHandlerRootView>
   );
@@ -81,14 +87,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: COLORS.lightBackground,
   },
   graphContainer: {
-    // height: 250,
-    // marginBottom: 30,
+    marginBottom: 16,
   },
   budgetItem: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     borderRadius: 8,
     marginBottom: 8,
     flexDirection: 'row',
@@ -99,26 +105,35 @@ const styles = StyleSheet.create({
   budgetName: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: COLORS.primaryText,
   },
   budgetAmount: {
     fontSize: 16,
-    color: '#2ecc71',
+    color: COLORS.success,
   },
   addButton: {
-    backgroundColor: '#2ecc71',
+    backgroundColor: COLORS.primary,
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
     alignItems: 'center',
+    shadowColor: COLORS.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 4,
   },
   addButtonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: 'bold',
   },
   deleteButton: {
     alignItems: 'center',
-    backgroundColor: '#ff3b30',
+    backgroundColor: COLORS.accent,
     borderRadius: 8,
     height: '90%',
     justifyContent: 'center',
@@ -126,7 +141,7 @@ const styles = StyleSheet.create({
     width: 100
   },
   deleteButtonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: 'bold',
   },
 }); 

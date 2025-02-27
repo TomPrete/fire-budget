@@ -1,16 +1,20 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import ApiClient from '../utils/api';
+import { useAuth } from './AuthContext';
 
 const IncomeContext = createContext(null);
 
 export const IncomeProvider = ({ children }) => {
   const [incomeStreams, setIncomeStreams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   const loadData = async () => {
     try {
-      const storedIncomeStreams = await AsyncStorage.getItem('incomeStreams');
-      if (storedIncomeStreams) setIncomeStreams(JSON.parse(storedIncomeStreams));
+      setLoading(true);
+      // Using the categories endpoint with is_expense=false to get income categories
+      const response = await ApiClient.get('/categories/?is_expense=false');
+      setIncomeStreams(response);
     } catch (error) {
       console.error('Error loading income data:', error);
     } finally {
@@ -18,29 +22,33 @@ export const IncomeProvider = ({ children }) => {
     }
   };
 
-  // Load data on mount
   useEffect(() => {
-    loadData();
-  }, []);
-
-  // Save data whenever it changes
-  useEffect(() => {
-    if (!loading) {
-      AsyncStorage.setItem('incomeStreams', JSON.stringify(incomeStreams));
+    if (user) {
+      loadData();
     }
-  }, [incomeStreams, loading]);
+  }, [user]);
 
-  const addIncomeStream = (source, amount) => {
-    setIncomeStreams(prev => [...prev, {
-      id: Date.now().toString(),
-      source,
-      amount: parseFloat(amount),
-      createdAt: new Date().toISOString()
-    }]);
+  const addIncomeStream = async (source, amount) => {
+    try {
+      const newIncome = await ApiClient.post('/categories/', {
+        name: source,
+        amount: parseFloat(amount),
+        is_expense: false
+      });
+      setIncomeStreams(prev => [...prev, newIncome]);
+      return newIncome;
+    } catch (error) {
+      throw error;
+    }
   };
 
-  const deleteIncomeStream = (incomeId) => {
-    setIncomeStreams(prev => prev.filter(income => income.id !== incomeId));
+  const deleteIncomeStream = async (incomeId) => {
+    try {
+      await ApiClient.delete(`/categories/${incomeId}/`);
+      setIncomeStreams(prev => prev.filter(income => income.id !== incomeId));
+    } catch (error) {
+      throw error;
+    }
   };
 
   const getTotalIncome = () => {

@@ -3,6 +3,7 @@ import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-nativ
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useBudget } from '../contexts/BudgetContext';
+import COLORS from '../constants/colors';
 
 export default function AddTransaction({ route, navigation }) {
   const { budgets } = useBudget();
@@ -39,14 +40,14 @@ export default function AddTransaction({ route, navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Ex: In-and-Out, Amazon, etc."
-        placeholderTextColor="#666"
+        placeholderTextColor={COLORS.secondaryText}
         value={description}
         onChangeText={setDescription}
       />
       <TextInput
         style={styles.input}
         placeholder="Ex: $10, $50, etc."
-        placeholderTextColor="#666"
+        placeholderTextColor={COLORS.secondaryText}
         value={amount}
         onChangeText={setAmount}
         keyboardType="numeric"
@@ -93,37 +94,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.lightBackground,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
     fontSize: 16,
-    color: '#000',
+    color: COLORS.primaryText,
   },
   dateText: {
-    color: '#000',
+    color: COLORS.primaryText,
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#2ecc71',
+    backgroundColor: COLORS.primary,
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
+    shadowColor: COLORS.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 4,
   },
   buttonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: 'bold',
   },
   pickerContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     borderRadius: 8,
     marginBottom: 16
   },
   picker: {
     padding: 2,
+    color: COLORS.primaryText,
   },
 }); 
